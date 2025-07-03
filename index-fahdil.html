@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>FAHDiL Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link ke CSS utama -->
+    <link rel="stylesheet" href="style-fahdil.css">
+    <!-- Icon Material untuk ikon-ikon kecil -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
+</head>
+<body>
+    <!-- Sidebar navigasi -->
+    <div id="sidebar" class="sidebar">
+        <h2 class="nav-title">Navigasi</h2>
+        <ul class="nav-list">
+            <li><span class="material-icons">shopping_cart</span> <a href="#" onclick="showSection('produk')">Beranda Produk</a></li>
+            <li><span class="material-icons">supervisor_account</span> <a href="#" onclick="showSection('pemilik')">Beranda Pemilik</a></li>
+            <li><span class="material-icons">emoji_events</span> <a href="#" onclick="showSection('owner')">Beranda Owner</a></li>
+            <li><span class="material-icons">card_giftcard</span> <a href="#" onclick="showSection('voucher')">Kode Voucher</a></li>
+            <li><span class="material-icons">help_outline</span> <a href="#" onclick="showSection('faq')">Bantuan / FAQ</a></li>
+        </ul>
+    </div>
+    <!-- Ikon hamburger untuk membuka/menutup sidebar -->
+    <div id="hamburger" class="hamburger" onclick="toggleSidebar()">☰</div>
+
+    <!-- Konten utama -->
+    <div id="main">
+        <!-- Banner header situs -->
+        <header class="banner">
+            <h1><span class="material-icons">diamond</span> FAHDiL Market</h1>
+            <p>Tempat Top Up &amp; Belanja Digital Terpercaya</p>
+        </header>
+
+        <!-- Bagian Daftar Produk -->
+        <section id="produk" class="section">
+            <h2>📦 Daftar Produk</h2>
+            <div class="filters">
+                <!-- Kolom pencarian dan filter produk -->
+                <input type="text" id="searchInput" placeholder="Cari produk..." onkeyup="filterProducts()">
+                <select id="sortSelect" onchange="sortProducts()">
+                    <option value="terbaru">Terbaru</option>
+                    <option value="terlaris">Terlaris</option>
+                    <option value="termurah">Termurah</option>
+                    <option value="termahal">Termahal</option>
+                </select>
+                <select id="categorySelect" onchange="filterProducts()">
+                    <option value="Semua">Semua Kategori</option>
+                    <option value="Pulsa">Pulsa</option>
+                    <option value="Paket Data">Paket Data</option>
+                    <option value="Voucher Game">Voucher Game</option>
+                </select>
+            </div>
+            <!-- Daftar produk yang akan diisi oleh JavaScript -->
+            <div id="productList" class="product-list">
+                <!-- Produk akan di-generate di sini -->
+            </div>
+        </section>
+
+        <!-- Bagian Riwayat Pembelian (selalu tampil bersama produk) -->
+        <section id="riwayat" class="section">
+            <h2>📜 Riwayat Pembelian Anda</h2>
+            <ul id="historyList">
+                <!-- Riwayat pembelian akan muncul di sini -->
+            </ul>
+        </section>
+
+        <!-- Bagian Login dan Admin (Pemilik) -->
+        <section id="pemilik" class="section hidden">
+            <h2>🔐 Login Pemilik</h2>
+            <!-- Form login pemilik -->
+            <form id="formPemilik" onsubmit="loginPemilik(event)">
+                <input type="text" id="usernamePemilik" placeholder="Username">
+                <input type="password" id="passwordPemilik" placeholder="Password">
+                <button type="submit" title="Masuk sebagai pemilik">Login</button>
+            </form>
+            <!-- Riwayat login pemilik (diambil dari localStorage) -->
+            <h3>📜 Riwayat Login Pemilik</h3>
+            <ul id="historyPemilik"></ul>
+            <hr>
+            <!-- Form tambah produk (hanya untuk pemilik) -->
+            <h3>➕ Tambah Produk</h3>
+            <form id="addProductForm" onsubmit="addProduct(event)">
+                <input type="text" id="newProductName" placeholder="Nama Produk">
+                <input type="number" id="newProductPrice" placeholder="Harga">
+                <input type="number" id="newProductDiscount" placeholder="Diskon %">
+                <input type="text" id="newProductCategory" placeholder="Kategori">
+                <label>Stok:</label><input type="number" id="newProductStock" placeholder="Stok">
+                <input type="file" id="newProductImage" accept="image/*">
+                <button type="submit" title="Simpan produk baru">Simpan</button>
+            </form>
+            <hr>
+            <!-- Form edit akun pemilik (simulasi) -->
+            <h3>✏️ Edit Akun Pemilik</h3>
+            <form id="editAccountForm" onsubmit="updatePemilikAccount(event)">
+                <input type="text" id="newPemilikUsername" placeholder="Username Baru">
+                <input type="password" id="newPemilikPassword" placeholder="Password Baru">
+                <button type="submit" title="Perbarui akun">Update</button>
+            </form>
+        </section>
+
+        <!-- Bagian Owner (Pemilik tertinggi) -->
+        <section id="owner" class="section hidden">
+            <h2>🔑 Login Owner</h2>
+            <form id="formOwner" onsubmit="loginOwner(event)">
+                <input type="text" id="usernameOwner" placeholder="Username">
+                <input type="password" id="passwordOwner" placeholder="Password">
+                <button type="submit" title="Masuk sebagai owner">Login</button>
+            </form>
+            <h3>📜 Riwayat Login Owner</h3>
+            <ul id="historyOwner"></ul>
+        </section>
+
+        <!-- Bagian Kode Voucher -->
+        <section id="voucher" class="section hidden">
+            <h2>🎁 Kode Voucher</h2>
+            <p>Gunakan kode voucher <strong>PROMO10</strong> untuk mendapatkan diskon tambahan!</p>
+        </section>
+
+        <!-- Halaman Bantuan / FAQ -->
+        <section id="faq" class="section hidden">
+            <h2>❓ Bantuan / FAQ</h2>
+            <ul class="faq-list">
+                <li><strong>Bagaimana cara membeli produk?</strong> Cari produk, lalu tekan tombol Beli pada produk yang diinginkan.</li>
+                <li><strong>Bagaimana cara login sebagai pemilik?</strong> Masukkan username dan password pemilik pada menu Login Pemilik.</li>
+                <li><strong>Bagaimana cara mendapatkan voucher?</strong> Kunjungi menu Kode Voucher dan gunakan kode yang tersedia.</li>
+                <li><strong>Apa yang dimaksud stok hampir habis?</strong> Jika stok suatu produk rendah, Anda akan melihat notifikasi peringatan di dekat produk tersebut.</li>
+            </ul>
+        </section>
+
+        <!-- Footer situs -->
+        <footer>
+            <p>© 2025 FAHDIL Market. Powered by WhatsApp 083131810087</p>
+        </footer>
+    </div>
+
+    <!-- Modal Popup Rating setelah pembelian -->
+    <div id="ratingModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeRatingModal()">&times;</span>
+            <h3>Terima kasih atas pembelian!</h3>
+            <p>Silakan beri penilaian (★):</p>
+            <div id="starRating">
+                <!-- Bintang rating (☆ awalnya) -->
+                <span onclick="setRating(1)" class="star">☆</span>
+                <span onclick="setRating(2)" class="star">☆</span>
+                <span onclick="setRating(3)" class="star">☆</span>
+                <span onclick="setRating(4)" class="star">☆</span>
+                <span onclick="setRating(5)" class="star">☆</span>
+            </div>
+            <button onclick="submitRating()">Kirim</button>
+        </div>
+    </div>
+
+    <!-- Sertakan file JavaScript -->
+    <script src="script-fahdil.js"></script>
+</body>
+              </html>
